@@ -1,13 +1,12 @@
 # Improvements:
-# vars_prompts for all the vars
-# uncommented vars_file as another option for user
-# conditional check for VT
+# - vars_prompts for all the vars
+# - uncommented vars_file as another option for user
+# - conditional check for VT
 #
-#
-# NEED ANSIBLE 0.8 OR HIGHER FOR THIS PLAYBOOK.
-
-# Caveats:  assumes static network.  
-# Lacks conditional statements to offer repeatability (config mgmt)
+# Caveats:
+# - requires ansible 0.8 or higher
+# - assumes static networking
+# - lacks conditional statements to offer repeatability (config mgmt)
 
 - hosts: nc
   sudo: True
@@ -20,8 +19,8 @@
     virtio_root: 1
     virtio_block: 1
     virtio_net: 1
-    nc_work_size: 50000
-    nc_cache_size: 50000
+#   nc_work_size: 50000
+#   nc_cache_size: 50000
     public_iface: em1
     use_bridge: yes
     bridge: br0
@@ -50,14 +49,14 @@
     action: service name=iptables enabled=no state=stopped
     tags: networking
     
-#  - name: read MAC address for interface to add to the bridge
+#  - name: old read MAC address for interface to add to the bridge
 #    action: command ifconfig em1 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
 ##    register: mac
 #   tags: networking
     
   - name: template the interface file
     action: template src=/home/lwade/Documents/Eucalyptus/Software/playbooks/nc/ifconfig_bridge_interface.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
-    tags: template
+    tags: template, networking
     
 #  - name: insert MAC address for desired interface
 ##    action: lineinfile dest=/etc/sysconfig/network-scripts/ifcfg-${bridge} regexp=^HWADDR line=HWADDR="\"${mac.rc}\""
@@ -65,7 +64,7 @@
     
   - name: template the bridge interface file
     action: template src=/home/lwade/Documents/Eucalyptus/Software/playbooks/nc/ifconfig_bridge.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge}
-    tags: template
+    tags: template, networking
     
   - name: check for VT enablement
     action: shell egrep '(vmx|smx)' /proc/cpuinfo 
