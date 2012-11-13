@@ -1,0 +1,134 @@
+# Improvements:
+# vars_prompts for all the vars
+# uncommented vars_file as another option for user
+# conditional check for VT
+#
+#
+# NEED ANSIBLE 0.8 OR HIGHER FOR THIS PLAYBOOK.
+
+# Caveats:  assumes static network.  
+# Lacks conditional statements to offer repeatability (config mgmt)
+
+- hosts: nc
+  sudo: True
+  vars:
+    euca_version: 3.1
+    eucatools_version: 2.1
+    loglevel: INFO
+    nc_port: 8775
+    hypervisor: KVM
+    virtio_root: 1
+    virtio_block: 1
+    virtio_net: 1
+    nc_work_size: 50000
+    nc_cache_size: 50000
+    public_iface: em1
+    use_bridge: yes
+    bridge: br0
+    bridge_iface: em1
+#    bridge_mac: ansible_${bridge_iface}.macaddress
+    network_mode: MANAGED-NOVLAN
+    nc_gateway: 10.104.0.1
+       
+  tasks:
+
+#   Section for debugging random stuff.
+#  - name: debug
+#    local_action: debug msg="$chosenif_macaddress
+##   tags: debug
+  
+  - name: install the NC packages and required dependencies
+    action: yum pkg=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/eucalyptus-release-${euca_version}.noarch.rpm state=latest
+    action: yum pkg=http://downloads.eucalyptus.com/software/euca2ools/${eucatools_version}/rhel/6/x86_64/euca2ools-release-${eucatools_version}.noarch.rpm state=latest
+    action: yum pkg=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/epel-release-6.noarch.rpm state=latest
+    action: yum pkg=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/elrepo-release-6.noarch.rpm state=latest
+    action: yum pkg=eucalyptus-enterprise-release.noarch.rpm state=latest
+    action: yum pkg=eucalyptus-nc state=latest
+    tags: packages
+   
+  - name: disable firewall
+    action: service name=iptables enabled=no state=stopped
+    tags: networking
+    
+#  - name: read MAC address for interface to add to the bridge
+#    action: command ifconfig em1 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
+##    register: mac
+#   tags: networking
+    
+  - name: template the interface file
+    action: template src=/home/lwade/Documents/Eucalyptus/Software/playbooks/nc/ifconfig_bridge_interface.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
+    tags: template
+    
+#  - name: insert MAC address for desired interface
+##    action: lineinfile dest=/etc/sysconfig/network-scripts/ifcfg-${bridge} regexp=^HWADDR line=HWADDR="\"${mac.rc}\""
+ ##   tags: template
+    
+  - name: template the bridge interface file
+    action: template src=/home/lwade/Documents/Eucalyptus/Software/playbooks/nc/ifconfig_bridge.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge}
+    tags: template
+    
+  - name: check for VT enablement
+    action: shell egrep '(vmx|smx)' /proc/cpuinfo 
+    register: vt_is_enabled
+    ignore_errors: true
+    tags: tune
+    
+  - name: error if no VT
+    action: fail msg="VT is not enabled on this system, please enable it in the system BIOS before proceeding."
+    only_if: "'${vt_is_enabled.rc}' == '1'"
+    tags: tune
+  
+  - name: disable selinux
+    action: command /usr/sbin/setenforce 0
+    ignore_errors: true
+    tags: tune
+    
+  - name: install tuned and set profile
+    action: yum pkg=tuned state=latest
+    action: command tuned-adm profile virtual-host
+    action: service name=tuned enabled=yes state=started
+    tags: tune
+
+  - name: turn on ntp
+    action: service name=ntpd state=started enabled=yes
+    tags: tune
+    
+  - name: set loglevel
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^LOGLEVEL line=LOGLEVEL="\"$loglevel\""
+    tags: conf
+    
+  - name: set NC port
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^NC_PORT line=NC_PORT="\"$nc_port\""
+    tags: conf
+    
+  - name: set Hypervisor
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^HYPERVISOR= line=HYPERVISOR="\"$hypervisor\""
+    tags: conf
+    
+  - name: enable virtio for instance root device
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^USE_VIRTIO_ROOT line=USE_VIRTIO_ROOT="\"$virtio_root\""
+    tags: conf
+    
+  - name: enable virtio for instance ebs 
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^USE_VIRTIO_DISK line=USE_VIRTIO_DISK="\"$virtio_block\""
+    tags: conf 
+    
+  - name: enable virtio for instance network adapters
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^USE_VIRTIO_NET line=USE_VIRTIO_NET="\"$virtio_net\""
+    tags: conf
+    
+  - name: set public interface
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^VNET_PUBINTERFACE= line=VNET_PUBINTERFACE="\"$public_iface\""
+    tags: conf 
+    
+  - name: set bridged interface
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^VNET_BRIDGE= line=VNET_BRIDGE="\"$bridge\""
+    tags: conf
+    
+  - name: set network mode
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^VNET_MODE= line=VNET_MODE="\"$network_mode\""
+    tags: conf
+    
+  - name: bringing up NC
+    action: service name=eucalyptus-nc enabled=yes state=started
+    tags: awaken
