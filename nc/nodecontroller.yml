@@ -1,0 +1,16 @@
+euca_version: 3.1
+eucatools_version: 2.1
+loglevel: INFO
+nc_port: 8775
+hypervisor: KVM
+virtio_root: 1
+virtio_block: 1
+virtio_net: 1
+public_iface: em1
+use_bridge: yes
+bridge: br0
+bridge_iface: em1
+bridge_mac: ansible_${bridge_iface}.macaddress
+network_mode: MANAGED-NOVLAN
+nc_gateway: 10.104.0.1
+register_with_rhn: no

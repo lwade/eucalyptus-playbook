@@ -13,8 +13,24 @@
   vars_files: 
     - nodecontroller.yml
     - ../../rhn.yml
-  vars:
-    do_rhn_reg: "'$register_with_rhn' == 'yes'"
+
+#  sudo: True
+#  vars:
+#   euca_version: 3.1
+#  eucatools_version: 2.1
+#    loglevel: INFO
+#    nc_port: 8775
+#    hypervisor: KVM
+#    virtio_root: 1
+#    virtio_block: 1
+#    virtio_net: 1
+#    public_iface: em1
+#    use_bridge: yes
+#    bridge: br0
+#    bridge_iface: em1
+#    bridge_mac: ansible_${bridge_iface}.macaddress
+#    network_mode: MANAGED-NOVLAN
+#    nc_gateway: 10.104.0.1
        
   tasks:
 
@@ -25,27 +41,30 @@
 
   - name: Download the Eucalyptus repo
     action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/eucalyptus-release-${euca_version}.noarch.rpm dest=/root/ thirsty=yes
+#    action: command rpm -Uvh /root/eucalyptus-release-${euca_version}.noarch.rpm
   
   - name: Download the Euca2ools repo
     action: get_url url=http://downloads.eucalyptus.com/software/euca2ools/${eucatools_version}/rhel/6/x86_64/euca2ools-release-${eucatools_version}.noarch.rpm dest=/root/ thirsty=yes
+#    action: command rpm -Uvh /root/euca2ools-release-${eucatools_version}.noarch.rpm
     
   - name: Download the EPEL repo
     action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/epel-release-6.noarch.rpm dest=/root/ thirsty=yes
+#    action: command rpm -Uvh /root/epel-release-6.noarch.rpm
     
   - name: Download the ELrepo repo
     action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/elrepo-release-6.noarch.rpm dest=/root/ thirsty=yes
+#    action: command rpm -Uvh /root/elrepo-release-6.noarch.rpm
     
-  - name: Install the repo RPMs
-    action: command rpm -Uvh --force /root/eucalyptus-release-${euca_version}.noarch.rpm /root/euca2ools-release-${eucatools_version}.noarch.rpm /root/epel-release-6.noarch.rpm /root/elrepo-release-6.noarch.rpm
+  - name: Install the repo RPM's
+    action: command rpm -Uvh /root/eucalyptus-release-${euca_version}.noarch.rpm /root/euca2ools-release-${eucatools_version}.noarch.rpm /root/epel-release-6.noarch.rpm /root/elrepo-release-6.noarch.rpm
+    ignore_errors: True
     
   - name: Tidy up
     action: command rm /root/eucalyptus-release-${euca_version}.noarch.rpm euca2ools-release-${eucatools_version}.noarch.rpm epel-release-6.noarch.rpm elrepo-release-6.noarch.rpm
     
 # Here we perform a step to register the system with RHN for channel entitlements    
   - name: Register with RHN for dependencies
-    action: command rhnreg_ks --username $rhn_username --password $rhn_password 
-    only_if: '$do_rhn_reg'
-    ignore_errors: True
+    action: command rhnreg_ks --username $rhn_username --password $rhn_password --force
  
   - name: install the Eucalyptus RPMs
     action: yum pkg=eucalyptus-enterprise-release.noarch.rpm state=latest
