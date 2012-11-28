@@ -4,4 +4,4 @@ Assuming your systems are configured to use sudo and your userid is added to the
 
 ansible-playbook eucalyptus.yml --private-key=/home/<me>/.ssh/<mykey> -s --ask-sudo-pass
 
-The playbook currently only installs an NC.  It uses a hosts group "nc", ensure this is declared in /etc/ansible/hosts before running (or edit it out).
+The playbook currently only installs an NC.  It uses a hosts group "nc", ensure this is declared in /etc/ansible/hosts before running (or edit it out).  Future revisions will rely on tags for Eucalyptus components.
