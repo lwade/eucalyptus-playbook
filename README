@@ -1,4 +1,4 @@
-This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) 
+This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) Requires Ansible 0.8. 
 
 Assuming your systems are configured to use sudo and your userid is added to the sudoers file along with your ssh public key on the servers, run with:
 
