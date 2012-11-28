@@ -1,0 +1,169 @@
+# Improvements:
+# - vars_prompts for all the vars?
+# - move vars to a var file which acts as a config template **DONE**
+# - conditional check for VT **DONE**
+# - Add other Eucalytus components and build based on tags
+# - Improve conditional execution to provide better config mgmt
+# - Replace only_if usage with new 0.9 "when" functionality
+#
+# Caveats:
+# - requires ansible 0.8 or higher
+# - assumes static networking
+# - lacks conditional statements to offer repeatability (config mgmt)
+
+- hosts: nc
+#  user: root
+  vars_files: 
+    - vars/nc-vars.yml
+    - ../../rhn.yml
+  vars:
+    do_rhn_reg: "'$register_with_rhn' == 'yes'"
+       
+  tasks:
+
+#   Section for debugging random stuff.
+#  - name: debug
+#    local_action: debug msg=$euca_version
+#    tags: debug
+
+  - name: Download the Eucalyptus repo
+    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/eucalyptus-release-${euca_version}.noarch.rpm dest=/tmp/ thirsty=yes
+  
+  - name: Download the Euca2ools repo
+    action: get_url url=http://downloads.eucalyptus.com/software/euca2ools/${eucatools_version}/rhel/6/x86_64/euca2ools-release-${eucatools_version}.noarch.rpm dest=/tmp/ thirsty=yes
+    
+  - name: Download the EPEL repo
+    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/epel-release-6.noarch.rpm dest=/tmp/ thirsty=yes
+    
+  - name: Download the ELrepo repo
+    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/elrepo-release-6.noarch.rpm dest=/tmp/ thirsty=yes
+    
+  - name: Install the repo RPMs
+    action: command rpm -Uvh --force /tmp/eucalyptus-release-${euca_version}.noarch.rpm /tmp/euca2ools-release-${eucatools_version}.noarch.rpm /tmp/epel-release-6.noarch.rpm /tmp/elrepo-release-6.noarch.rpm
+    
+  - name: Tidy up
+    action: command rm /tmp/eucalyptus-release-${euca_version}.noarch.rpm 
+    action: command rm /tmp/euca2ools-release-${eucatools_version}.noarch.rpm 
+    action: command rm /tmp/epel-release-6.noarch.rpm 
+    action: command rm /tmp/elrepo-release-6.noarch.rpm
+    
+# Here we perform a step to register the system with RHN for channel entitlements    
+  - name: Register with RHN for dependencies
+    action: command rhnreg_ks --username $rhn_username --password $rhn_password 
+    only_if: '$do_rhn_reg'
+    ignore_errors: True
+ 
+  - name: install the Eucalyptus RPMs
+    action: yum pkg=eucalyptus-enterprise-release.noarch.rpm state=latest
+    action: yum pkg=eucalyptus-nc state=latest
+    tags: packages
+   
+  - name: disable firewall
+    action: service name=iptables enabled=no state=stopped
+    tags: networking
+    
+#  - name: old read MAC address for interface to add to the bridge
+#    action: command ifconfig em1 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
+##    register: mac
+#   tags: networking
+    
+#  - name: insert MAC address for desired interface
+##    action: lineinfile dest=/etc/sysconfig/network-scripts/ifcfg-${bridge} regexp=^HWADDR line=HWADDR="\"${mac.rc}\""
+ ##   tags: template
+    
+  - name: checking existing networking configuration
+    action: shell /sbin/ifconfig $bridge
+    register: bridge_exists
+    ignore_errors: true
+    tags: networking
+    
+  - name: template the interface file
+    action: template src=templates/ifconfig_bridge_interface.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
+    only_if: "'${bridge_exists.rc}' == '1'"
+    tags: networking
+    
+  - name: template the bridge interface file
+    action: template src=templates/ifconfig_bridge.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge}
+    only_if: "'${bridge_exists.rc}' == '1'"
+    tags: networking
+  
+  - name: restart networking
+    action: service name=network enabled=yes state=restarted
+    tags: networking
+ 
+#  - name: check for VT enablement
+#    action: shell egrep '(vmx|smx)' /proc/cpuinfo 
+#    register: vt_is_enabled
+#   ignore_errors: true
+#    tags: tune
+
+  - name: modprobe kvm modules
+    action: shell /sbin/modprobe kvm_intel
+    only_if: "'$hypervisor' == 'kvm'"
+    register: kvm_loaded
+    tags: tune
+    
+  - name: Fail on lack of VT
+    action: fail msg="VT is not enabled on this system, please enable it in the system BIOS before proceeding."
+    only_if: "'${kvm_loaded.rc}' == '1'"
+    tags: tune
+  
+  - name: Ensure SElinux is disabled
+    action: selinux state=disabled
+    tags: tune
+    
+  - name: install tuned 
+    action: yum pkg=tuned state=latest
+    tags: tune
+
+  - name: set profile
+    action: command tuned-adm profile $tuned_profile
+    tags: tune
+
+  - name: set tuned to start on boot
+    action: service name=tuned enabled=yes state=started
+    tags: tune
+
+  - name: turn on ntp
+    action: service name=ntpd enabled=yes state=started
+    tags: tune
+    
+  - name: set loglevel
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^LOGLEVEL line=LOGLEVEL="\"$loglevel\""
+    tags: conf
+    
+  - name: set NC port
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^NC_PORT line=NC_PORT="\"$nc_port\""
+    tags: conf
+    
+  - name: set Hypervisor
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^HYPERVISOR= line=HYPERVISOR="\"$hypervisor\""
+    tags: conf
+    
+  - name: enable virtio for instance root device
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^USE_VIRTIO_ROOT line=USE_VIRTIO_ROOT="\"$virtio_root\""
+    tags: conf
+    
+  - name: enable virtio for instance ebs 
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^USE_VIRTIO_DISK line=USE_VIRTIO_DISK="\"$virtio_block\""
+    tags: conf 
+    
+  - name: enable virtio for instance network adapters
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^USE_VIRTIO_NET line=USE_VIRTIO_NET="\"$virtio_net\""
+    tags: conf
+    
+  - name: set public interface
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^VNET_PUBINTERFACE= line=VNET_PUBINTERFACE="\"$public_iface\""
+    tags: conf 
+    
+  - name: set bridged interface
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^VNET_BRIDGE= line=VNET_BRIDGE="\"$bridge\""
+    tags: conf
+    
+  - name: set network mode
+    action: lineinfile dest=/etc/eucalyptus/eucalyptus.conf regexp=^VNET_MODE= line=VNET_MODE="\"$network_mode\""
+    tags: conf
+   
+  - name: bringing up NC
+    action: service name=eucalyptus-nc enabled=yes state=started
+    tags: awaken
