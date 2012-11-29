@@ -1,6 +1,6 @@
 This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) Requires Ansible 0.8. 
 
-Assuming your systems are configured to use sudo and your userid is added to the sudoers file along with your ssh public key on the servers, run with:
+Assuming your systems are configured to use sudo and your userid is added to the sudoers file with full superuser permissions, along with your ssh public key on the servers, run with:
 
 ansible-playbook eucalyptus.yml --private-key=/home/<me>/.ssh/<mykey> -s --ask-sudo-pass
 
