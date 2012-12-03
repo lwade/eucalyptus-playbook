@@ -57,6 +57,12 @@
     action: yum pkg=eucalyptus-enterprise-release.noarch.rpm state=latest
     action: yum pkg=eucalyptus-nc state=latest
     tags: packages
+    
+  - name: check other package dependencies
+    action: yum pkg=libselinux-python state=latest
+    tags: 
+      - packages
+      - tune
    
   - name: disable firewall
     action: service name=iptables enabled=no state=stopped
@@ -124,7 +130,7 @@
     action: service name=tuned enabled=yes state=started
     tags: tune
 
-  - name: turn on ntp
+  - name: turn on ntp and start on boot
     action: service name=ntpd enabled=yes state=started
     tags: tune
     
