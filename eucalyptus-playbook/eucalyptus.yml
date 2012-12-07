@@ -15,10 +15,19 @@
 #  user: root
   vars_files: 
     - vars/nc-vars.yml
+    - vars/sc-vars.yml
+    - vars/cc-vars.yml
+    - vars/clc-vars.yml
+    - vars/walrus-vars.yml
+    - vars/global-vars.yml
     - ../../rhn.yml
   vars:
     do_rhn_reg: "'$register_with_rhn' == 'yes'"
-       
+    eucalyptus_release: "eucalyptus-release-${euca_version}.noarch.rpm"    
+    euca2ools_release: "euca2ools-release-${eucatools_version}.noarch.rpm"
+    epel_release: "epel-release-6.noarch.rpm"
+    elrepo_release: "elrepo-release-6.noarch.rpm"
+   
   tasks:
 
 #   Section for debugging random stuff.
@@ -27,25 +36,40 @@
 #    tags: debug
 
   - name: Download the Eucalyptus repo
-    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/eucalyptus-release-${euca_version}.noarch.rpm dest=/tmp/ thirsty=yes
-  
+    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/${eucalyptus_release} dest=/tmp/ thirsty=yes
+    tags: 
+	- packages 
+	- global
+ 
   - name: Download the Euca2ools repo
-    action: get_url url=http://downloads.eucalyptus.com/software/euca2ools/${eucatools_version}/rhel/6/x86_64/euca2ools-release-${eucatools_version}.noarch.rpm dest=/tmp/ thirsty=yes
-    
+    action: get_url url=http://downloads.eucalyptus.com/software/euca2ools/${eucatools_version}/rhel/6/x86_64/${euca2ools_release} dest=/tmp/ thirsty=yes
+    tags: 
+        - packages
+        - global
+
   - name: Download the EPEL repo
-    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/epel-release-6.noarch.rpm dest=/tmp/ thirsty=yes
-    
+    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/${epel_release} dest=/tmp/ thirsty=yes 
+    tags: 
+        - packages
+        - global
+
   - name: Download the ELrepo repo
-    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/elrepo-release-6.noarch.rpm dest=/tmp/ thirsty=yes
-    
+    action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/${elrepo_release} dest=/tmp/ thirsty=yes
+    tags: 
+        - packages
+        - global
+
   - name: Install the repo RPMs
-    action: command rpm -Uvh --force /tmp/eucalyptus-release-${euca_version}.noarch.rpm /tmp/euca2ools-release-${eucatools_version}.noarch.rpm /tmp/epel-release-6.noarch.rpm /tmp/elrepo-release-6.noarch.rpm
-    
+    action: command rpm -Uvh --force /tmp/$eucalyptus_release /tmp/$euca2ools_release /tmp/$epel_release /tmp/$elrepo_release
+    tags: 
+        - packages
+        - global
+
   - name: Tidy up
-    action: command rm /tmp/eucalyptus-release-${euca_version}.noarch.rpm 
-    action: command rm /tmp/euca2ools-release-${eucatools_version}.noarch.rpm 
-    action: command rm /tmp/epel-release-6.noarch.rpm 
-    action: command rm /tmp/elrepo-release-6.noarch.rpm
+    action: command rm /tmp/$eucalyptus_release /tmp/$euca2ools_release /tmp/$epel_release /tmp/$elrepo_release 
+    tags: 
+        - packages
+        - global
     
 # Here we perform a step to register the system with RHN for channel entitlements    
   - name: Register with RHN for dependencies
