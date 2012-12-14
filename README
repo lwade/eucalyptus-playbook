@@ -18,4 +18,4 @@ euca2ools are a dependency for ec2 module and it is run locally like so:
 
 ansible-playbook eucalyptus-userconsole.yml -v --private-key=YOUR_INSTANCE_PRIVATE_KEY
 
-If you're using an Ubuntu image, edit the user line in the playbook's second section. 
+If you're using an Ubuntu image, edit the user line in the playbook's second section so that the login is as "ubuntu" rather than root.
