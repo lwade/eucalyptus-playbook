@@ -1,6 +1,6 @@
 This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) Requires Ansible 0.8. 
 
-<strong># Eucalyptus Core Playbook</strong>
+*Eucalyptus Core Playbook
 
 This is currently named eucalyptus.yml in the master branch (check testing for the bleeding edge stuff).  At the moment it only deploys the NC.
 
@@ -10,7 +10,7 @@ ansible-playbook eucalyptus.yml --private-key=/home/<me>/.ssh/<mykey> -s --ask-s
 
 The playbook currently only installs an NC.  It uses a hosts group "nc", ensure this is declared in /etc/ansible/hosts before running (or edit it out).  Future revisions will rely on tags for Eucalyptus components.
 
-<strong># Eucalyptus User Console Playbook</strong>
+*Eucalyptus User Console Playbook
 
 This is named eucalyptus-userconsole.yml and uses the Ansible EC2 module to go and launch an instance in Euca/EC2 and then install and configure the Eucalyptus User Console
 
