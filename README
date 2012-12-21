@@ -14,7 +14,7 @@ The playbook currently only installs an NC.  It uses a hosts group "nc", ensure 
 
 This is named eucalyptus-userconsole.yml and uses the Ansible EC2 module to go and launch an instance in Euca/EC2 and then install and configure the Eucalyptus User Console
 
-euca2ools are a dependency for ec2 module and it is run locally like so:
+euca2ools are a dependency for ec2 module and it is run locally like so (assuming you have [local]localhost defined in /etc/ansible/hosts):
 
 ansible-playbook eucalyptus-userconsole.yml -v --private-key=YOUR_INSTANCE_PRIVATE_KEY
 
