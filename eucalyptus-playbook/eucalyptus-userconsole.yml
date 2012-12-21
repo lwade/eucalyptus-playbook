@@ -50,7 +50,7 @@
       action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/3.2/rhel/6/x86_64/eucalyptus-release-3.2.0.noarch.rpm dest=/tmp/ thirsty=yes
     
     - name: Configure Eucalyptus repo
-      action: command rpm -Uvh --force /tmp/eucalyptus-release-3.2.0.noarch.rpm 
+      action: command rpm -Uvh --force /tmp/eucalyptus-release-3.2.noarch.rpm 
 
     - name: Install Eucalyptus User Console
       action: yum pkg=eucalyptus-console state=latest
