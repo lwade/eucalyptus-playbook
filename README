@@ -19,3 +19,11 @@ euca2ools are a dependency for ec2 module and it is run locally like so (assumin
 ansible-playbook eucalyptus-userconsole.yml -v --private-key=YOUR_INSTANCE_PRIVATE_KEY
 
 If you're using an Ubuntu image, edit the user line in the playbook's second section so that the login is as "ubuntu" rather than root.
+
+*Eucalyptus Reporting Playbook
+
+This is named eucalyptus-reporting-ec2.yml and again uses the Ansible EC2 module to go and launch an instance in Euca/EC2 and configure the Eucalyptus Reporting Archive (Data Warehouse)
+
+ansible-playbook eucalyptus-reporting-ec2.yml -v --private-key=YOUR_INSTANCE_PRIVATE_KEY
+
+
