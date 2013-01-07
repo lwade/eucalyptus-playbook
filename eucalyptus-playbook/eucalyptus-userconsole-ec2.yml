@@ -14,7 +14,7 @@
   gather_facts: false
 
   vars_files:
-      - ../../cloud-credentials.yml
+      - vars/cloud-credentials.yml
   vars:
       keypair: admin
       instance_type: m1.small
