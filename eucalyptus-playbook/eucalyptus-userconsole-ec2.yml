@@ -27,7 +27,7 @@
     - name: Launch instance 
       local_action: ec2 ec2_access_key=$access_key ec2_secret_key=$secret_key ec2_url=$ec2_url keypair=$keypair group=$security_group instance_type=$instance_type image=$image wait=true
       register: ec2
-      
+     
     - name: Add new instance to host group
       local_action: add_host hostname=${ec2.instances[0].public_ip} groupname=launched 
 
@@ -43,6 +43,10 @@
       - vars/euca-console.yml
       
   tasks:
+    - name: Wait before configuring instance
+      action: pause seconds=15
+      # adjust this value if you need to allow more time for a vm to launch
+
     - name: Ensure NTP is up and running
       action: service name=ntpd state=started
     
