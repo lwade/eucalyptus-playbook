@@ -33,6 +33,10 @@
 
     - name: Debug
       local_action: debug msg="The instance has ${inst_res.instances[0].public_ip}"
+
+    - name: Pausing
+      action: pause seconds=15
+      # Pause to allow the instance to finish boot
       
 - name: Configure instance
   hosts: launched
