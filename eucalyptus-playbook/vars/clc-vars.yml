@@ -12,6 +12,8 @@ hypervisor: kvm
 virtio_root: 1
 virtio_block: 1
 virtio_net: 1
+# Eucalyptus networking mode
+network_mode: MANAGED-NOVLAN
 # ~~~~~~~ Networking variables ~~~~~~~
 # Public interface (used in Eucalyptus networking modes without bridging on the NC)
 public_iface: em1

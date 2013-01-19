@@ -4,14 +4,8 @@ eucatools_version: 2.1
 # ~~~~~~~ Eucalyptus.conf variables ~~~~~~~~
 # Log level, options: DEBUG, INFO, WARN, ERROR, and FATAL
 loglevel: INFO
-# Port for NC to listen on
-nc_port: 8775
-# Hypervisor, kvm or xen
-hypervisor: kvm
-# Virtio enablement 1 = on | 0 = off 
-virtio_root: 1
-virtio_block: 1
-virtio_net: 1
+# Eucalyptus networking mode
+network_mode: MANAGED-NOVLAN
 # ~~~~~~~ Networking variables ~~~~~~~
 # Public interface (used in Eucalyptus networking modes without bridging on the NC)
 public_iface: em1
@@ -23,8 +17,6 @@ bridge: br0
 bridge_iface: em1
 # Mac address of interface which will be added to the bridge
 bridge_mac: ansible_${bridge_iface}.macaddress
-# Gateway for NC
-nc_gateway: 10.104.0.1
 # ~~~~~~~ Misc variables ~~~~~~~
 # Should the system be registered with RHN?
 register_with_rhn: no

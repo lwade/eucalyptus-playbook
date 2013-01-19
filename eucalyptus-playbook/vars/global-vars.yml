@@ -1,0 +1,2 @@
+# Eucalyptus networking mode
+network_mode: MANAGED-NOVLAN
