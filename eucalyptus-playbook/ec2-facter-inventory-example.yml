@@ -37,7 +37,3 @@
     - "${facter_ec2_public_keys_0_openssh_key}"
     - "${facter_ec2_reservation_id}"
     - "${facter_ec2_security_groups}"
-
-  - name: Check
-    local_action: debug msg="${ansible_eth0.ipv4.address}"
-
