@@ -1,0 +1,103 @@
+# Source your eucarc, ensuring $EC_URL, $EC2_ACCESS_KEY and $EC2_SECRET_KEY env variables are set. This module also depends on euca2ools being installed on the local system
+
+- name: Stage instance
+  hosts: local
+  connection: local
+  user: root
+  gather_facts: false
+
+  vars:
+      keypair: admin
+      instance_type: m1.small
+      security_group: default
+      image: emi-048B3A37 
+      count: 3
+#      mail_from: ansible@localhost
+#      mail_to: root@localhost
+
+  tasks:
+    - name: Launch instance 
+      local_action: ec2 keypair=$keypair group=$security_group instance_type=$instance_type image=$image instance_count=$count wait=true
+      register: ec2
+     
+    - name: Add new instance to host group
+      local_action: add_host hostname=${ec2.instances[0].public_ip} groupname=launched 
+
+    - name: Debug
+      local_action: debug msg="The instance has ${inst_res.instances[0].public_ip}"
+    
+    - name: Report
+      local_action: debug msg="$launched"
+
+    - name: Pausing
+      action: pause seconds=15
+      # Pause here to allow the instance to finish boot
+  
+- name: Install packages
+  hosts: launched
+  user: root
+  gather_facts: True
+
+  vars:
+      io_workers: 1
+      Cpu_workers: 0
+      vm_workers: 0
+      duration_secs: 320
+      cpu_benchmark: yes
+      
+  tasks:
+    - name: Ensure NTP is up and running
+      action: service name=ntpd state=started
+
+    - name: Download the EPEL repo
+      action: get_url url=http://downloads.eucalyptus.com/software/eucalyptus/3.2/rhel/6/x86_64/epel-release-6.noarch.rpm dest=/tmp/ thirsty=yes
+
+    - name: Install the EPEL repo
+      action: command rpm -Uvh /tmp/epel-release-6.noarch.rpm
+
+    - name: Install stress
+      action: yum pkg=stress state=latest
+ 
+    - name: Install bonnie++
+      action: yum pkg=bonnie++ state=latest
+
+    - name: Install sysbench
+      action: yum pkg=sysbench state=latest
+
+    - name: Run combined stress profile
+      action: command /usr/bin/stress -c $cpu_workers -m $vm_workers -i $io_workers -t $duration_secs 
+#      when_set: $io_workers and $cpu_workers and $vm_workers
+      when_integer: $io_workers > 0 and $cpu_workers > 0 and $vm_workers > 0
+      tags: stress
+
+    - name: Run IO stress profile
+      action: command /usr/bin/stress -i $io_workers -t $duration_secs
+#      when_unset: $cpu_workers and $vm_workers
+      when_integer: $io_workers > 0 and $cpu_workers == 0 and $vm_workers == 0
+      tags: stress
+ 
+    - name: Run CPU stress profile 
+      action: command /usr/bin/stress -c $cpu_workers -t $duration_secs
+#      when_unset: $io_workers and $vm_workers
+      when_integer: $cpu_workers > 0 and $io_workers == 0 and $vm_workers == 0
+      tags: stress
+
+    - name: Run VM stress profile
+      action: command /usr/bin/stress -c $vm_workers -t $duration_secs
+#      when_unset: $cpu_workers and $io_workers
+      when_integer: $vm_workers > 0 and $cpu_workers == 0 and $io_workers == 0
+      tags: stress
+
+    - name: Benchmark CPU
+      action: command /usr/bin/sysbench --test=cpu run
+      when_string: $cpu_benchmark == 'yes'
+      tags: benchmark 
+
+#  - name: Send e-mail to admins
+#    local_action: mail
+#        from=${mail_from}
+#       to=${mail_to}
+#      subject="EC2 instance (${shortname}) ${ec2.instances[0].id}"
+#        body="EC2 instance ${ec2.instances[0].id} created on ${ec2.instances[0].public_ip}"
+
+

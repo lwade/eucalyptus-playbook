@@ -1,11 +1,5 @@
-# Ansible playbook for deploying the Eucalyptus User Console into Eucalyptus or AWS.
-# The cloud-credentials.yml variable file should be populated with the following variables which are called during the play:
-#
-#	access_key: YOUR_EC2_ACCESS_KEY
-#	secret_key: YOUR_EC2_SECRET_KEY
-#	ec2_url: YOUR EC2 ENDPOINT, e.g http://mycloud:8773/services/Eucalyptus or https://ec2.eu-west-1.amazonaws.com
-#
-# This module also depends on euca2ools being installed on the local system
+# Source your eucarc, ensuring $EC_URL, $EC2_ACCESS_KEY and $EC2_SECRET_KEY env variables are set. This module also depends on euca2ools being installed on the local system
+
 
 - name: Stage instance
   hosts: local
@@ -13,8 +7,6 @@
   user: root
   gather_facts: false
 
-  vars_files:
-      - vars/cloud-credentials.yml
   vars:
       keypair: admin
       instance_type: m1.small
