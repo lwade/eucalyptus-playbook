@@ -1,0 +1,39 @@
+# Ansible playbook for deploying an instance and generating a specified load on the system.  Useful for stressing your cloud.
+# The cloud-credentials.yml variable file should be populated with the following variables which are called during the play:
+#
+#	access_key: YOUR_EC2_ACCESS_KEY
+#	secret_key: YOUR_EC2_SECRET_KEY
+#	ec2_url: YOUR EC2 ENDPOINT, e.g http://mycloud:8773/services/Eucalyptus or https://ec2.eu-west-1.amazonaws.com
+#
+# This module also depends on euca2ools being installed on the local system
+
+- name: Stage instance
+  hosts: aws 
+  user: root
+  gather_facts: true 
+
+  tasks:
+
+  - name: Retrieve instance information
+    local_action: debug msg=$item
+    with_items:
+    - "${facter_ec2_ami_id}"
+    - "${facter_ec2_ami_launch_index}"
+    - "${facter_ec2_ami_manifest_path}"
+    - "${facter_ec2_block_device_mapping_ami}"
+    - "${facter_ec2_block_device_mapping_ephemeral0}"
+    - "${facter_ec2_block_device_mapping_ephemeral1}"
+    - "${facter_ec2_block_device_mapping_root}"
+    - "${facter_ec2_hostname}"
+    - "${facter_ec2_instance_id}"
+    - "${facter_ec2_instance_type}"
+    - "${facter_ec2_kernel_id}"
+    - "${facter_ec2_local_hostname}"
+    - "${facter_ec2_local_ipv4}"
+    - "${facter_ec2_placement_availability_zone}"
+    - "${facter_ec2_profile}"
+    - "${facter_ec2_public_hostname}"
+    - "${facter_ec2_public_ipv4}"
+    - "${facter_ec2_public_keys_0_openssh_key}"
+    - "${facter_ec2_reservation_id}"
+    - "${facter_ec2_security_groups}"

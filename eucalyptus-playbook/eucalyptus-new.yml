@@ -1,5 +1,5 @@
 #
-# NODE CONTROLLER
+# INSTALL NODE CONTROLLER(s) AND TUNE
 #
  
 - hosts: nc
@@ -113,7 +113,7 @@
     tags: tune
     
 # 
-# CLUSTER CONTROLLER
+# INSTALL CLUSTER CONTROLLER(s) AND TUNE
 #
 
 - hosts: cc
@@ -187,7 +187,7 @@
     tags: tune
 
 # 
-# STORAGE CONTROLLER
+# INSTALL STORAGE CONTROLLER(s) AND TUNE
 #
 
 - hosts: sc
@@ -261,7 +261,7 @@
     tags: tune
 
 # 
-# WALRUS
+# INSTALL WALRUS(es) AND TUNE
 #
 
 - hosts: walrus
@@ -335,7 +335,7 @@
     tags: tune
 
 # 
-# CLOUD CONTROLLER
+# INSTALL CLOUD CONTROLLER(s) AND TUNE
 #
 
 - hosts: clc
