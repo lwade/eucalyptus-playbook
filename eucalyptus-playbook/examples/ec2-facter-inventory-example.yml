@@ -1,13 +1,6 @@
-# Ansible playbook for deploying an instance and generating a specified load on the system.  Useful for stressing your cloud.
-# The cloud-credentials.yml variable file should be populated with the following variables which are called during the play:
-#
-#	access_key: YOUR_EC2_ACCESS_KEY
-#	secret_key: YOUR_EC2_SECRET_KEY
-#	ec2_url: YOUR EC2 ENDPOINT, e.g http://mycloud:8773/services/Eucalyptus or https://ec2.eu-west-1.amazonaws.com
-#
-# This module also depends on euca2ools being installed on the local system
+# This module depends on euca2ools being installed on the local system and EC2_ACCESS_KEY, EC2_SECRET_KEY and EC2_URL being set
 
-- name: Stage instance
+- name: Define settings.
   hosts: aws 
   user: root
   gather_facts: true 
