@@ -26,7 +26,9 @@ This is named eucalyptus-reporting-ec2.yml and again uses the Ansible EC2 module
 
 	ansible-playbook eucalyptus-reporting-ec2.yml -v --private-key=YOUR_INSTANCE_PRIVATE_KEY
 
-# Cloud credentials for workload deployment (see examples dir).  Ensure the following environmental variables are set:
+# Cloud credentials 
+
+.. for workload deployment (see examples dir).  Ensure the following environmental variables are set:
 
 access_key: ACCESSKEYHERE
 secret_key: SEEKRITKEYHERE
