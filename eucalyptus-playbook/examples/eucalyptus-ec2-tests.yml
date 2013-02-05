@@ -1,23 +1,21 @@
-# Source your eucarc, ensuring $EC_URL, $EC2_ACCESS_KEY and $EC2_SECRET_KEY env variables are set. This module also depends on euca2ools being installed on the local system
-
 - name: Stage instance
   hosts: local
   connection: local
-  user: root
+  user: root 
   gather_facts: false
 
   vars:
-      keypair: admin
+      keypair: lwade
       instance_type: m1.small
       security_group: default
-      image: emi-048B3A37 
-      count: 4
+      image: ami-dc53e8b5 
+      count: 2
 #      mail_from: ansible@localhost
 #      mail_to: root@localhost
 
   tasks:
     - name: Launch instance 
-      local_action: ec2 keypair=$keypair group=$security_group instance_type=$instance_type image=$image count=$count wait=true
+      local_action: ec2 keypair=$keypair group=$security_group instance_type=$instance_type image=$image count=$count wait=true monitoring=true 
       register: ec2
 
     - name: Itemised host group addition
@@ -35,7 +33,7 @@
 - name: Install packages
   hosts: launched
   user: root
-  gather_facts: True
+  gather_facts: true
 
   vars:
       io_workers: 1
