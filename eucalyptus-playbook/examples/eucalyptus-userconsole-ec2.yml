@@ -1,3 +1,7 @@
+# ----------------------------------------------------- 
+# This playbook is an example for deploying a single Eucalyptus user console instance into EC2/Euca
+# -----------------------------------------------------
+
 - name: Stage console instance(s)
   hosts: local
   connection: local
@@ -12,7 +16,7 @@
 
   tasks:
     - name: Launch instance 
-      local_action: ec2 keypair=$keypair group=$security_group instance_type=$instance_type image=$image wait=true count=3
+      local_action: ec2 keypair=$keypair group=$security_group instance_type=$instance_type image=$image wait=true 
       register: ec2
      
     - name: Add new instance to host group
