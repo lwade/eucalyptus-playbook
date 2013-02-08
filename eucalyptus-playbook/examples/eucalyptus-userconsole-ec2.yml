@@ -1,4 +1,4 @@
-- name: Stage instance
+- name: Stage console instance(s)
   hosts: local
   connection: local
   user: root
@@ -26,7 +26,11 @@
 
   vars_files:
       - ../vars/euca-console.yml
-      
+     
+  handlers:
+    - name: restart console
+      action: service name=eucalyptus-console state=restarted
+ 
   tasks:
     - name: Ensure NTP is up and running
       action: service name=ntpd state=started
@@ -49,15 +53,20 @@
  
     - name: Install Eucalyptus User Console
       action: yum pkg=eucalyptus-console state=latest
+      notify:
+      - restart console 
 
     - name: Configure User Console Endpoint
       action: lineinfile dest=/etc/eucalyptus-console/console.ini state=present regexp=^clchost line=clchost:" ${clchost}"
+      notify:
+      - restart console
 
     - name: Configure User Console Port
       action: lineinfile dest=/etc/eucalyptus-console/console.ini state=present regexp=^uiport line=uiport:" ${port}"
+      notify:
+      - restart console
 
     - name: Configure User Console Language
       action: lineinfile dest=/etc/eucalyptus-console/console.ini state=present regexp=^language line=language:" ${lang}"
-
-    - name: Restart Eucalyptus User Console
-      action: service name=eucalyptus-console state=restarted
+      notify:
+      - restart console
