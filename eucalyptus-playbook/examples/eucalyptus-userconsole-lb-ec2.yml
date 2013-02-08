@@ -61,8 +61,6 @@
  
     - name: Install Eucalyptus User Console
       action: yum pkg=eucalyptus-console state=latest
-      notify:
-      - restart console 
 
     - name: Configure User Console Endpoint
       action: lineinfile dest=/etc/eucalyptus-console/console.ini state=present regexp=^clchost line=clchost:" ${clchost}"

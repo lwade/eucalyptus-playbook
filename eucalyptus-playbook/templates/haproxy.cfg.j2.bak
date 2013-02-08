@@ -1,3 +1,4 @@
+{% set inst = ec2 %}
 global
     log         127.0.0.1 local2
 
@@ -28,6 +29,8 @@ frontend  main *:8888
 #---------------------------------------------------------------------
 
 backend console
-    {% for instance in ec2.instances %}
+    {% for instance in inst.instances %}
     	server {{ instance.id }} {{ instance.public_ip }}:8888 check
     {% endfor %}
+
+# Single out a specific system with:  server  console1 {{ inst.instances[0].public_ip }}:8888 check
