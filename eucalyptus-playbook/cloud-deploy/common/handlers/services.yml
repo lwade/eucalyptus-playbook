@@ -1,0 +1,5 @@
+---
+- name: restart cloud services
+  action: service name=eucalyptus-${service} state=restarted
+- name: restart networking services
+  action: service name=network state=restarted

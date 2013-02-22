@@ -1,5 +1,5 @@
 # Eucalyptus software versions major.minor
-euca_version: 3.1
+euca_version: 3.2
 eucatools_version: 2.1
 # ~~~~~~~ Eucalyptus.conf variables ~~~~~~~~
 # Log level, options: DEBUG, INFO, WARN, ERROR, and FATAL
@@ -20,7 +20,7 @@ use_bridge: yes
 # Bridge interface name
 bridge: br0
 # Interface to add to the bridge
-bridge_iface: em1
+bridge_iface: em2
 # Mac address of interface which will be added to the bridge
 bridge_mac: ansible_${bridge_iface}.macaddress
 # Gateway for NC

@@ -1,0 +1,59 @@
+  - name: Install the Eucalyptus RPMs and deps
+    action: yum pkg=$item state=installed
+    with_items:
+    - eucalyptus-nc
+    - libselinux-python
+    - tuned
+    tags:
+    - packages   
+   
+  - name: disable firewall
+    action: service name=iptables enabled=no state=stopped
+    tags: networking
+    
+  - name: checking existing networking configuration
+    action: shell /sbin/ifconfig $bridge
+    register: bridge_exists
+    ignore_errors: true
+    tags: networking
+    
+  - name: template the interface file
+    action: template src=common/templates/ifconfig_bridge_interface.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
+    only_if: "'${bridge_exists.rc}' == '1'"
+    tags: networking
+    notify:
+      - restart networking services
+    
+  - name: template the bridge interface file
+    action: template src=common/templates/ifconfig_bridge.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge}
+    only_if: "'${bridge_exists.rc}' == '1'"
+    tags: networking
+    notify:
+       - restart networking services
+  
+  - name: modprobe kvm modules
+    action: shell /sbin/modprobe kvm_intel
+    only_if: "'$hypervisor' == 'kvm'"
+    register: kvm_loaded
+    tags: tune
+    
+  - name: Fail on lack of VT
+    action: fail msg="VT is not enabled on this system, please enable it in the system BIOS before proceeding."
+    only_if: "'${kvm_loaded.rc}' == '1'"
+    tags: tune
+  
+  - name: Ensure SElinux is disabled
+    action: selinux state=disabled
+    tags: tune
+    
+  - name: set profile
+    action: command tuned-adm profile $tuned_profile
+    tags: tune
+
+  - name: set tuned to start on boot
+    action: service name=tuned enabled=yes state=started
+    tags: tune
+
+  - name: turn on ntp and start on boot
+    action: service name=ntpd enabled=yes state=started
+    tags: tune
