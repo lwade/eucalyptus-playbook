@@ -1,14 +1,14 @@
-[clc]
-prc8
+[cloudcontroller]
+g-08-10.prc.eucalyptus-systems.com
 
 [walrus]
-prc8
+g-08-10.prc.eucalyptus-systems.com
 
-[cc]
-prc8
+[clustercontroller]
+g-08-10.prc.eucalyptus-systems.com
 
-[sc]
-prc8
+[storagecontroller]
+g-08-10.prc.eucalyptus-systems.com
 
-[nc]
-prc9
+[nodecontroller]
+g-08-12.prc.eucalyptus-systems.com

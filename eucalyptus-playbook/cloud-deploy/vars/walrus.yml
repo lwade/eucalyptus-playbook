@@ -1,0 +1,3 @@
+service: cloud
+package: walrus
+tuned_profile: enterprise-storage

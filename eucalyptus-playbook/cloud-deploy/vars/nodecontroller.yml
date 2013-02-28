@@ -1,0 +1,4 @@
+service: nc
+package: nc
+tuned_profile: virtual-host
+

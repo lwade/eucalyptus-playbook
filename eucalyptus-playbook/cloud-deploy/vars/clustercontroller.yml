@@ -1,0 +1,4 @@
+service: cc
+package: cc
+tuned_profile: latency-performance
+

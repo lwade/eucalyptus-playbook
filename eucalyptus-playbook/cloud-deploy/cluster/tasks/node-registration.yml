@@ -1,0 +1,5 @@
+  - name: registering nodes
+    action: command euca_conf --no-scp --no-rsync --no-sync --register-nodes=${hostvars.{$item}.ansible_${bridge_iface}.ipv4.address}
+    with_items: ${groups.nodecontroller}
+    tags:
+    - nodereg

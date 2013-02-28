@@ -27,10 +27,25 @@
     tags:
     - packages
 
-#  - name: Register with RHN for dependencies
-#    action: command rhnreg_ks --username $rhn_username --password $rhn_password
-#    only_if: '$do_rhn_reg'
-#    ignore_errors: True
-#    tags:
-#    - packages
+  - name: Register with RHN for dependencies
+    action: command rhnreg_ks --username $rhn_username --password $rhn_password
+    only_if: '$do_rhn_reg'
+    ignore_errors: yes
+    tags:
+    - packages
 
+  - name: Add optional channel for dependencies
+    action: command rhn-channel -c rhel-x86_64-server-optional-6 -a -u $rhn_username -p $rhn_password
+    only_if: '$do_rhn_reg'
+    ignore_errors: yes
+    tags:
+    - packages
+
+  - name: Install packages
+    action: yum pkg=$item state=installed
+    with_items:
+    - libselinux-python
+    - tuned
+    - eucalyptus-${package}
+    tags:
+    - packages
