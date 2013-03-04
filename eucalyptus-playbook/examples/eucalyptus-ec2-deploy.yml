@@ -25,6 +25,9 @@
       local_action: add_host hostname=${item.public_ip} groupname=deploy
       with_items: ${ec2.instances}
 
+    - name: Wait for a while before trying to configure instances
+      local_action: pause minutes=1
+
 - name: Configure instance
   hosts: deploy
   user: root
