@@ -13,7 +13,7 @@
     - geturl,packages
 
   - name: Install the repo RPMs
-    action: command rpm -Uvh --force ${temp.stdout}/$item
+    action: command yum -y localinstall ${temp.stdout}/$item
     with_items:
     - eucalyptus-release-${euca_version}.noarch.rpm
     - euca2ools-release-${eucatools_version}.noarch.rpm

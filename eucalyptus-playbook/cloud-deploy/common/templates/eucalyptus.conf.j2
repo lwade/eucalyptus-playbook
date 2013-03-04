@@ -52,7 +52,13 @@ SCHEDPOLICY="{{ schedpolicy }}"
 # A space-separated list of IP addresses for all the NCs that this CC
 # should communicate with.  The ``euca_conf --register-nodes'' command
 # manipulates this setting.
-NODES=""
+{% if 'clustercontroller' in group_names %}
+   {% set iface = 'ansible_' + bridge %}
+   {% for host in groups['nodecontroller'] -%}
+NODES="{{ hostvars[host][iface]['ipv4']['address'] }}"
+   {%- endfor %}
+{% endif %}
+
 
 # When multiple CCs reside in the same layer 2 broadcast domain, change
 # this setting to "Y" to disable tunneling.  This setting has no effect
@@ -133,7 +139,7 @@ USE_VIRTIO_NET="{{ use_virtio_net }}"
 
 # The directory where the NC will store instances' root filesystems,
 # ephemeral storage, and cached copies of images.
-INSTANCE_PATH="/var/lib/eucalyptus/instances"
+INSTANCE_PATH="{{ instance_path }}"
 
 # If euca-bundle-upload, euca-check-bucket, or euca-delete-bundle do
 # not appear in the NC's search PATH then specify their locations here.

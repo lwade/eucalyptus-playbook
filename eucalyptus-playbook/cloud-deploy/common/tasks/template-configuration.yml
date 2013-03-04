@@ -1,6 +1,9 @@
     - name: Template the global eucalyptus.conf file
       action: template src=common/templates/eucalyptus.conf.j2 dest=/etc/eucalyptus/eucalyptus.conf 
-      notify: 
-        - restart services
+      tags:
+      - configure
+
+    - name: Restart services
+      action: service name=$service state=restarted
       tags:
       - configure
