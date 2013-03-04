@@ -8,32 +8,29 @@
       keypair: lwade
       instance_type: m1.small
       security_group: sg-c4e4d7ac 
-      image: ami-00c83b69
+      image: ami-cc5af9a5 
       group_ids: sg-eb267883
 #      mail_from: ansible@localhost
 #      mail_to: root@localhost
 
   tasks:
-#    - name: Launch instance 
-#      local_action: ec2 keypair=$keypair group=default instance_type=$instance_type image=$image wait=true instance_tags='{"my":"stuff"}' 
-#      register: ec2
+    - name: Launch instance 
+      local_action: ec2 keypair=$keypair group=default instance_type=$instance_type image=$image wait=true instance_tags='{"my":"stuff"}' 
+      register: ec2
 
-#    - name: Itemised host group addition
-#      local_action: add_host hostname=${item.public_ip} groupname=launched
-#      with_items: ${ec2.instances} 
+    - name: Itemised host group addition
+      local_action: add_host hostname=${item.public_ip} groupname=launched
+      with_items: ${ec2.instances} 
+
+    - name: Pause
+      local_action: pause minutes=3
      
 #    - name: Add first instance to host group
 #      local_action: add_host hostname=${ec2.instances[0].public_ip} groupname=launched
 #    - name: Debug
-#      local_action: debug msg="The second instance has ${ec2.instances[1].public_ip}"
-    - name: Launch a load of instances
-      local_action: ec2 keypair=$keypair instance_type=$instance_type image=$image wait=true count=1 group=win-sg-1
-      register: ec2
 
-#    - name: Create a volume and attach
-#      local_action: ec2_vol volume_size=1 instance=${item.id} 
-#      with_items: ${ec2.instances}
-#      register: ec2_vol
+#      local_action: debug msg="The second instance has ${ec2.instances[1].public_ip}"
+#    - name: Launch a load of instances
 
 #    - name: Create and attach volume
 #      local_action: ec2_vol instance=${item.id} volume_size=5 
