@@ -4,11 +4,10 @@ This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) Req
 
 This is currently named cloud-deploy-sfe.yml in eucalyptus-playbook/cloud-deploy.  At the moment it only deploys a single frontend cloud.
 
-Assuming your systems are configured to use sudo and your userid is added to the sudoers file with full superuser permissions, along with your ssh public key on the servers, run with:
+Assuming your systems are configured to use sudo and your userid is added to the sudoers file with full superuser permissions, run with:
 
 	 ansible-playbook cloud-deploy-sfe.yml -s --ask-sudo-pass -k
 
-The playbook currently only installs an NC.  It uses a hosts group "nc", ensure this is declared in /etc/ansible/hosts before running (or edit it out).  Future revisions will rely on tags for Eucalyptus components.
 
 # Eucalyptus User Console Playbook
 
