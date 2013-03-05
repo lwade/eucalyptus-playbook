@@ -6,7 +6,7 @@ This is currently named cloud-deploy-sfe.yml in eucalyptus-playbook/cloud-deploy
 
 Assuming your systems are configured to use sudo and your userid is added to the sudoers file with full superuser permissions, along with your ssh public key on the servers, run with:
 
-	 ansible-playbook cloud-deploy-sfe.yml -s --ask-sudo-pass -K
+	 ansible-playbook cloud-deploy-sfe.yml -s --ask-sudo-pass -k
 
 The playbook currently only installs an NC.  It uses a hosts group "nc", ensure this is declared in /etc/ansible/hosts before running (or edit it out).  Future revisions will rely on tags for Eucalyptus components.
 
