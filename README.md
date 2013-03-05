@@ -29,9 +29,9 @@ This is named eucalyptus-reporting-ec2.yml and again uses the Ansible EC2 module
 
 .. for workload deployment (see examples dir).  Ensure the following environmental variables are set:
 
-access_key: ACCESSKEYHERE
-secret_key: SEEKRITKEYHERE
-ec2_url: http://<euca-clc-ip>:8773/services/Eucalyptus
+* access_key: ACCESSKEYHERE
+* secret_key: SEEKRITKEYHERE
+* ec2_url: http://<euca-clc-ip>:8773/services/Eucalyptus
 
 
 
