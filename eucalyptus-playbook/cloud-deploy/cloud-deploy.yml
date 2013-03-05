@@ -1,0 +1,49 @@
+- hosts: nc
+  tasks:
+    - include: common/tasks/packages.yml
+    - include: node.yml
+    - include: common/tasks/euca-config.yml
+  handlers:
+    - include: common/handlers/services.yml
+
+- hosts: cc
+  tasks:
+    - include: common/tasks/packages.yml
+    - include: clustercontroller.yml
+    - include: common/tasks/euca-config.yml
+  handlers:
+    - include: common/handlers/services.yml
+
+- hosts: sc
+  tasks:
+    - include: common/tasks/packages.yml
+    - include: storagecontroller.yml
+    - include: common/tasks/euca-config.yml
+  handlers:
+    - include: common/handlers/services.yml
+
+- hosts: clc
+  tasks:
+    - include: common/tasks/packages.yml
+    - include: cloudcontroller.yml
+    - include: common/tasks/euca-config.yml
+  handlers:
+    - include: common/handlers/services.yml
+
+- hosts: walrus
+  tasks:
+    - include: common/tasks/packages.yml
+    - include: walrus.yml
+    - include: common/tasks/euca-config.yml
+  handlers:
+    - include: common/handlers/services.yml
+
+- hosts: clc
+  vars:
+    partition: az1
+  tasks:
+    - include: common/tasks/component-registration.yml
+
+- hosts: cc
+  tasks:
+    - include: common/tasks/node-registration.yml
