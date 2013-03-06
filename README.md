@@ -1,14 +1,13 @@
-This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) Requires Ansible 0.9 for the ec2 module. 
+This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) Requires Ansible 0.9+ for the ec2 module, suggest using the devel branch of ansible from github. 
 
 # Eucalyptus Core Playbook
 
-This is currently named eucalyptus.yml in the master branch (check testing for the bleeding edge stuff).  At the moment it only deploys the NC.
+This is currently named cloud-deploy-sfe.yml in eucalyptus-playbook/cloud-deploy.  At the moment it only deploys a single frontend cloud.
 
-Assuming your systems are configured to use sudo and your userid is added to the sudoers file with full superuser permissions, along with your ssh public key on the servers, run with:
+Assuming your systems are configured to use sudo and your userid is added to the sudoers file with full superuser permissions, run with:
 
-	 ansible-playbook eucalyptus.yml --private-key=/home/<me>/.ssh/<mykey> -s --ask-sudo-pass
+	 ansible-playbook cloud-deploy-sfe.yml -s --ask-sudo-pass -k
 
-The playbook currently only installs an NC.  It uses a hosts group "nc", ensure this is declared in /etc/ansible/hosts before running (or edit it out).  Future revisions will rely on tags for Eucalyptus components.
 
 # Eucalyptus User Console Playbook
 
@@ -30,9 +29,9 @@ This is named eucalyptus-reporting-ec2.yml and again uses the Ansible EC2 module
 
 .. for workload deployment (see examples dir).  Ensure the following environmental variables are set:
 
-access_key: ACCESSKEYHERE
-secret_key: SEEKRITKEYHERE
-ec2_url: http://<euca-clc-ip>:8773/services/Eucalyptus
+* access_key: ACCESSKEYHERE
+* secret_key: SEEKRITKEYHERE
+* ec2_url: http://<euca-clc-ip>:8773/services/Eucalyptus
 
 
 
