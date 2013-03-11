@@ -18,7 +18,7 @@
     tags: networking
     
   - name: template the interface file
-    action: template src=common/templates/ifconfig_bridge_interface.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
+    action: template src=common/templates/ifconfig_bridge_interface_${bridge_type}.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
     only_if: "'${bridge_exists.rc}' == '1'"
     tags: networking
     notify:

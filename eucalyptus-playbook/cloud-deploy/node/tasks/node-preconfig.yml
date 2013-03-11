@@ -11,7 +11,7 @@
     notify: restart networking services
     
   - name: template the bridge interface file
-    action: template src=node/templates/ifconfig_bridge.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge}
+    action: template src=node/templates/ifconfig_bridge_${bridge_type}.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge}
     only_if: "'${bridge_exists.rc}' == '1'"
     tags: template
     notify: restart networking services
