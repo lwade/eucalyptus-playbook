@@ -42,8 +42,8 @@
     only_if: "'${kvm_loaded.rc}' == '1'"
     tags: tune
   
-  - name: Ensure SElinux is disabled
-    action: selinux state=disabled
+  - name: Ensure SElinux is permissive
+    action: selinux policy=targeted state=permissive
     tags: tune
     
   - name: set profile

@@ -11,8 +11,8 @@
     action: service name=iptables enabled=no state=stopped
     tags: networking
 
-  - name: Ensure SElinux is disabled
-    action: selinux state=disabled
+  - name: Ensure SElinux is permissive
+    action: selinux policy=targeted state=permissive
     tags: tune
 
   - name: set profile

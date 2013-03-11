@@ -1,5 +1,5 @@
-    - name: Ensure SELinux is disabled
-      action: selinux state=disabled
+    - name: Ensure SELinux is permissive
+      action: selinux policy=targeted state=permissive
       when_boolean: $ansible_selinux
       tags: 
       - preconfig
