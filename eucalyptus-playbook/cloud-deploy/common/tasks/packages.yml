@@ -1,29 +1,21 @@
-  - name: Create a temporary directory
-    action: command mktemp -d 
-    register: temp
-
-  - name: Download the repo RPMs
-    action: get_url url=$item dest=${temp.stdout} thirsty=yes
+  - name: Check for repo RPMs
+    action: command rpm -qi --quiet $item
+    ignore_errors: yes
+    register: repo_packages
     with_items:
-    - http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/eucalyptus-release-${euca_version}.noarch.rpm
-    - http://downloads.eucalyptus.com/software/euca2ools/${eucatools_version}/rhel/6/x86_64/euca2ools-release-${eucatools_version}.noarch.rpm
-    - http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/epel-release-6.noarch.rpm
-    - http://downloads.eucalyptus.com/software/eucalyptus/${euca_version}/rhel/6/x86_64/elrepo-release-6.noarch.rpm
-    tags:
-    - geturl,packages
+    - eucalyptus-release
+    - euca2ools-release
+    - epel-release
+    - elrepo-release
 
   - name: Install the repo RPMs
-    action: command yum -y localinstall ${temp.stdout}/$item
+    action: command rpm -ivh --force $item
     with_items:
-    - eucalyptus-release-${euca_version}.noarch.rpm
-    - euca2ools-release-${eucatools_version}.noarch.rpm
-    - epel-release-6.noarch.rpm
-    - elrepo-release-6.noarch.rpm
-    tags:
-    - packages
-
-  - name: Remove temporary directory
-    action: file path=${temp.stdout} state=absent 
+    - ${euca_repo}/eucalyptus-release-${euca_version}.noarch.rpm
+    - ${eucatools_repo}/euca2ools-release-${eucatools_version}.noarch.rpm
+    - ${euca_repo}/epel-release-6.noarch.rpm
+    - ${euca_repo}/elrepo-release-6.noarch.rpm
+    only_if: "'${repo_packages.rc}' == '1'"
     tags:
     - packages
 
@@ -47,5 +39,7 @@
     - libselinux-python
     - tuned
     - eucalyptus-${package}
+    - ntp
+    - unzip 
     tags:
     - packages
