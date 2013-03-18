@@ -18,7 +18,7 @@
     tags: networking
     
   - name: template the interface file
-    action: template src=common/templates/ifconfig_bridge_interface.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
+    action: template src=common/templates/ifconfig_bridge_interface_${bridge_type}.j2 dest=/etc/sysconfig/network-scripts/ifcfg-${bridge_iface}
     only_if: "'${bridge_exists.rc}' == '1'"
     tags: networking
     notify:
@@ -42,8 +42,8 @@
     only_if: "'${kvm_loaded.rc}' == '1'"
     tags: tune
   
-  - name: Ensure SElinux is disabled
-    action: selinux state=disabled
+  - name: Ensure SElinux is permissive
+    action: selinux policy=targeted state=permissive
     tags: tune
     
   - name: set profile
