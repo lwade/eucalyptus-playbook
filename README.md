@@ -1,4 +1,4 @@
-## THIS IS DEPRECATED.  Please see eucalyptus/ansible-playbooks 
+## THIS REPO IS DEPRECATED.  PLEASE SEE EUCALYPTUS/ANSIBLE-PLAYBOOKS.
 
 
 This is a placeholder for Eucalyptus Ansible playbooks. Work in progress! :) Requires Ansible 0.9+ for the ec2 module, suggest using the devel branch of ansible from github. 
